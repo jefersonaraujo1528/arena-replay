@@ -1,0 +1,30 @@
+{
+  "_comentario": "Copie para config.json e ajuste. Chaves iniciadas com _ são ignoradas.",
+
+  "camera_source": "0",
+  "camera_backend": "auto",
+  "width": 1280,
+  "height": 720,
+  "fps": 30,
+  "overlay_clock": true,
+
+  "pre_seconds": 10,
+  "post_seconds": 5,
+  "precise_trim": false,
+  "merge_window_seconds": 3,
+
+  "x264_preset": "veryfast",
+  "x264_crf": 23,
+
+  "max_replays": 300,
+  "min_free_disk_mb": 1024,
+
+  "host": "0.0.0.0",
+  "port": 8000,
+  "device_token": "TROQUE-POR-UM-TOKEN-LONGO",
+  "allow_test_trigger": true,
+  "public_url": "",
+
+  "export_keep_hours": 24,
+  "export_max_seconds": 120
+}

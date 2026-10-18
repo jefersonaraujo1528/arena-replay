@@ -1,0 +1,10 @@
+# Captura da webcam/RTSP e verificação dos vídeos gerados
+opencv-python>=4.8,<6
+numpy>=1.24
+# API HTTP + servidor
+fastapi>=0.110
+uvicorn>=0.27
+# FFmpeg estático (evita instalar o FFmpeg manualmente no Windows)
+imageio-ffmpeg>=0.5
+# QR Code para abrir no celular (Python puro, sem dependências)
+segno>=1.5

@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#0B1B2B">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Arena Replay">
+  <title>Arena Replay</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" href="icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="icon-192.png">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="top">
+    <div class="brand"><span class="rec" aria-hidden="true"></span>ARENA <b>REPLAY</b></div>
+    <div class="top-actions">
+      <button id="btnStatus" class="pill" type="button" aria-haspopup="dialog" aria-controls="sheetStatus">
+        <span class="dot" id="statusDot"></span><span id="statusText">Conectando…</span>
+      </button>
+      <button id="btnQr" class="icon-btn" type="button" aria-haspopup="dialog" aria-controls="dlgQr" title="Abrir no celular">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="2" width="12" height="20" rx="3"/><path d="M10 18h4"/></svg>
+        <span class="lbl">Celular</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Lance em andamento -->
+  <div class="now" id="now" hidden>
+    <div class="now-in">
+      <div class="spin" aria-hidden="true"></div>
+      <div class="now-txt">
+        <strong id="nowTitle">Lance marcado!</strong>
+        <span id="nowSub">Gravando os segundos depois do lance…</span>
+      </div>
+      <div class="now-bar" aria-hidden="true"><i id="nowBar"></i></div>
+    </div>
+  </div>
+
+  <main class="layout">
+    <!-- PLAYER + EDITOR -->
+    <section class="viewer" id="viewer" aria-label="Replay selecionado">
+      <div class="empty" id="empty">
+        <div class="empty-ic" aria-hidden="true"><span></span></div>
+        <h1>Aperte o botão da quadra</h1>
+        <p>Depois de um lance bonito, aperte o botão. Em poucos segundos o replay aparece aqui, pronto para assistir e baixar.</p>
+        <button class="btn btn-main" id="btnTestEmpty" type="button" hidden>Simular um lance agora</button>
+      </div>
+
+      <div class="player" id="player" hidden>
+        <div class="v-head">
+          <div>
+            <h1 id="vTitle">Lance</h1>
+            <p id="vSub" class="muted"></p>
+          </div>
+          <span class="tag" id="vNew" hidden>NOVO</span>
+        </div>
+
+        <div class="video-box" id="videoBox">
+          <video id="video" playsinline muted preload="auto"></video>
+          <button class="big-play" id="bigPlay" type="button" aria-label="Reproduzir">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>
+          </button>
+          <span class="speed-badge" id="speedBadge" hidden>0,5×</span>
+          <div class="v-error" id="vError" hidden>Não foi possível carregar o vídeo. Toque em “Baixar vídeo inteiro”.</div>
+        </div>
+
+        <div class="controls" role="toolbar" aria-label="Controles do vídeo">
+          <button class="ctl" id="cBack" type="button" title="Voltar 1 segundo (←)"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11 6l-6 6 6 6M19 6l-6 6 6 6"/></svg><span>1 s</span></button>
+          <button class="ctl" id="cPrevF" type="button" title="Quadro anterior (,)"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg><span>quadro</span></button>
+          <button class="ctl ctl-play" id="cPlay" type="button" title="Reproduzir / pausar (espaço)" aria-label="Reproduzir">
+            <svg viewBox="0 0 24 24" class="i-play" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>
+            <svg viewBox="0 0 24 24" class="i-pause" aria-hidden="true"><path d="M7 5h4v14H7zM13 5h4v14h-4z"/></svg>
+          </button>
+          <button class="ctl" id="cNextF" type="button" title="Próximo quadro (.)"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg><span>quadro</span></button>
+          <button class="ctl" id="cFwd" type="button" title="Avançar 1 segundo (→)"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13 6l6 6-6 6M5 6l6 6-6 6"/></svg><span>1 s</span></button>
+          <button class="ctl" id="cSpeed" type="button" title="Velocidade"><b id="speedLbl">1×</b><span>lento</span></button>
+          <button class="ctl" id="cFull" type="button" title="Tela cheia"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg><span>tela</span></button>
+        </div>
+
+        <div class="editor">
+          <div class="ed-head">
+            <h2>Escolha o trecho</h2>
+            <p class="muted small">Arraste as alças amarelas. O traço vermelho é o momento em que o botão foi apertado.</p>
+          </div>
+          <div class="tl" id="tl">
+            <div class="tl-strip" id="tlStrip"></div>
+            <div class="tl-shade tl-shade-l" id="shadeL"></div>
+            <div class="tl-shade tl-shade-r" id="shadeR"></div>
+            <div class="tl-sel" id="tlSel"></div>
+            <div class="tl-press" id="tlPress" title="Momento do botão"><span>botão</span></div>
+            <div class="tl-head" id="tlHead"></div>
+            <div class="handle h-start" id="hStart" role="slider" tabindex="0" aria-label="Início do trecho"><i></i></div>
+            <div class="handle h-end" id="hEnd" role="slider" tabindex="0" aria-label="Fim do trecho"><i></i></div>
+          </div>
+          <div class="tl-times">
+            <span>Início <b id="tStart">0:00,0</b></span>
+            <span class="dur">Duração <b id="tDur">0,0 s</b></span>
+            <span>Fim <b id="tEnd">0:00,0</b></span>
+          </div>
+          <div class="marks">
+            <button class="btn btn-soft" id="mIn" type="button">Início aqui</button>
+            <button class="btn btn-soft" id="mOut" type="button">Fim aqui</button>
+          </div>
+          <div class="chips" role="group" aria-label="Seleções rápidas">
+            <button class="chip" data-preset="all" type="button">Vídeo inteiro</button>
+            <button class="chip" data-preset="play" type="button">Só o lance</button>
+            <button class="chip" data-preset="before" type="button">5 s antes do botão</button>
+            <label class="chip chip-check"><input type="checkbox" id="loopSel" checked> Repetir trecho</label>
+          </div>
+        </div>
+
+        <div class="actions">
+          <button class="btn btn-main btn-xl" id="dlSel" type="button">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg>
+            <span id="dlSelTxt">Baixar trecho</span>
+          </button>
+          <div class="actions-2">
+            <a class="btn btn-ghost" id="dlAll" href="#" download>Baixar vídeo inteiro</a>
+            <button class="btn btn-ghost" id="shareBtn" type="button" hidden>Compartilhar</button>
+          </div>
+          <p class="hint" id="iosHint" hidden>No iPhone, o vídeo vai para o app <b>Arquivos</b>. Para salvar na galeria: abra o arquivo, toque em Compartilhar e depois em <b>Salvar vídeo</b>.</p>
+          <p class="hint kbd-hint">Atalhos: <kbd>espaço</kbd> play · <kbd>←</kbd><kbd>→</kbd> 1 s · <kbd>,</kbd><kbd>.</kbd> quadro · <kbd>I</kbd><kbd>O</kbd> início/fim · <kbd>D</kbd> baixar</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- LISTA -->
+    <section class="list" aria-label="Replays">
+      <div class="list-head">
+        <h2>Replays</h2>
+        <button class="icon-btn" id="btnRefresh" type="button" title="Atualizar lista">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 11a8 8 0 1 0-2.3 5.7M20 4v7h-7"/></svg><span class="lbl">Atualizar</span>
+        </button>
+      </div>
+      <div class="alert" id="listError" role="alert" hidden></div>
+      <ul class="cards" id="cards"></ul>
+      <p class="muted small" id="listEmpty" hidden>Os replays aparecem aqui.</p>
+    </section>
+  </main>
+
+  <!-- PAINEL DO SISTEMA -->
+  <div class="backdrop" id="backdrop" hidden></div>
+  <aside class="sheet" id="sheetStatus" role="dialog" aria-modal="true" aria-labelledby="sheetTitle" hidden>
+    <div class="sheet-grip" aria-hidden="true"></div>
+    <div class="sheet-head"><h2 id="sheetTitle">Sistema</h2><button class="icon-btn close" type="button" data-close aria-label="Fechar">✕</button></div>
+    <div class="cam"><img id="snapshot" alt="Imagem ao vivo da câmera" hidden><span id="snapEmpty">Sem imagem da câmera</span></div>
+    <dl class="stats">
+      <div><dt>Câmera</dt><dd id="sCam">—</dd></div>
+      <div><dt>Gravação</dt><dd id="sRec">—</dd></div>
+      <div><dt>Buffer</dt><dd id="sBuf">—</dd></div>
+      <div><dt>Fila</dt><dd id="sQueue">—</dd></div>
+      <div><dt>Disco livre</dt><dd id="sDisk">—</dd></div>
+      <div><dt>Último botão</dt><dd id="sLast">—</dd></div>
+    </dl>
+    <ul class="problems" id="problems"></ul>
+    <button class="btn btn-main" id="btnTest" type="button" hidden>Simular lance</button>
+    <p class="muted small" id="version"></p>
+  </aside>
+
+  <!-- QR CODE -->
+  <aside class="sheet sheet-qr" id="dlgQr" role="dialog" aria-modal="true" aria-labelledby="qrTitle" hidden>
+    <div class="sheet-grip" aria-hidden="true"></div>
+    <div class="sheet-head"><h2 id="qrTitle">Abrir no celular</h2><button class="icon-btn close" type="button" data-close aria-label="Fechar">✕</button></div>
+    <p class="muted">Conecte o celular no Wi-Fi da arena e aponte a câmera para o código.</p>
+    <img class="qr" id="qrImg" alt="QR Code com o endereço do Arena Replay">
+    <p class="qr-url"><b id="qrUrl">—</b></p>
+    <button class="btn btn-ghost" id="copyUrl" type="button">Copiar endereço</button>
+  </aside>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"><span id="toastTxt"></span><button id="toastBtn" type="button" hidden></button></div>
+  <a id="dlAnchor" hidden download></a>
+  <script src="app.js"></script>
+</body>
+</html>

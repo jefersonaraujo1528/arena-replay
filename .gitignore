@@ -1,0 +1,10 @@
+# Dados gerados (vídeos, banco, logs)
+data/
+# Configuração local e segredos
+config.json
+firmware/arena_button/secrets.h
+# Python
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
